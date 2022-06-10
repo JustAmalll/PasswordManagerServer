@@ -1,5 +1,8 @@
 package dev.amal.data.responses
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class PasswordItemResponse(
     val id: String,
     val userId: String,

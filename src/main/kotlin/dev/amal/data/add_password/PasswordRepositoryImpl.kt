@@ -14,8 +14,13 @@ class PasswordRepositoryImpl(
     override suspend fun addPassword(passwordItem: PasswordItem): Boolean =
         passwords.insertOne(passwordItem).wasAcknowledged()
 
-    override suspend fun getPasswords(userId: String): List<PasswordItemResponse> {
-        return passwords.find(PasswordItem::userId eq userId).toList()
+    override suspend fun getPasswords(
+        userId: String, page: Int, pageSize: Int
+    ): List<PasswordItemResponse> {
+        return passwords.find(PasswordItem::userId eq userId)
+            .skip(page * pageSize)
+            .limit(pageSize)
+            .toList()
             .map { passwordItem ->
                 PasswordItemResponse(
                     id = passwordItem.id,
@@ -27,5 +32,4 @@ class PasswordRepositoryImpl(
                 )
             }
     }
-
 }
