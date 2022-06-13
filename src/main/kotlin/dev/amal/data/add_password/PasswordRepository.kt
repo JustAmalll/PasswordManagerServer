@@ -6,10 +6,11 @@ import dev.amal.utils.Constants
 
 interface PasswordRepository {
     suspend fun addPassword(passwordItem: PasswordItem): Boolean
-
     suspend fun getPasswords(
         userId: String,
         page: Int = 0,
         pageSize: Int = Constants.DEFAULT_PAGE_SIZE
     ): List<PasswordItemResponse>
+
+    suspend fun getPasswordDetails(passwordId: String): PasswordItemResponse?
 }

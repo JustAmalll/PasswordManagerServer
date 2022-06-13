@@ -1,13 +1,15 @@
 package dev.amal
 
-import dev.amal.data.add_password.PasswordRepository
 import dev.amal.data.add_password.PasswordRepositoryImpl
 import dev.amal.data.user.MongoUserDataSource
-import io.ktor.server.application.*
-import dev.amal.plugins.*
+import dev.amal.plugins.configureMonitoring
+import dev.amal.plugins.configureRouting
+import dev.amal.plugins.configureSecurity
+import dev.amal.plugins.configureSerialization
 import dev.amal.security.hashing.SHA256HashingService
 import dev.amal.security.token.JwtTokenService
 import dev.amal.security.token.TokenConfig
+import io.ktor.server.application.*
 import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.reactivestreams.KMongo
 

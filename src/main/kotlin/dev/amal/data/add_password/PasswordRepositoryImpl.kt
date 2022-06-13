@@ -16,20 +16,31 @@ class PasswordRepositoryImpl(
 
     override suspend fun getPasswords(
         userId: String, page: Int, pageSize: Int
-    ): List<PasswordItemResponse> {
-        return passwords.find(PasswordItem::userId eq userId)
+    ): List<PasswordItemResponse> =
+        passwords.find(PasswordItem::userId eq userId)
             .skip(page * pageSize)
             .limit(pageSize)
             .toList()
             .map { passwordItem ->
                 PasswordItemResponse(
                     id = passwordItem.id,
-                    userId = userId,
                     title = passwordItem.title,
                     email = passwordItem.email,
                     password = passwordItem.password,
                     website = passwordItem.website
                 )
             }
+
+    override suspend fun getPasswordDetails(
+        passwordId: String
+    ): PasswordItemResponse? {
+        val password = passwords.findOneById(passwordId) ?: return null
+        return PasswordItemResponse(
+            id = password.id,
+            title = password.title,
+            email = password.email,
+            password = password.password,
+            website = password.website
+        )
     }
 }

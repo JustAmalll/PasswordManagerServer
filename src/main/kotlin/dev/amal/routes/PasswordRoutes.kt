@@ -15,7 +15,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
 fun Route.addPassword(
-    passwordDataSource: PasswordRepository
+    passwordRepository: PasswordRepository
 ) {
     authenticate {
         post("/add/password") {
@@ -32,7 +32,7 @@ fun Route.addPassword(
                 website = request.website
             )
 
-            val wasAcknowledged = passwordDataSource.addPassword(passwordItem)
+            val wasAcknowledged = passwordRepository.addPassword(passwordItem)
             if (!wasAcknowledged) {
                 call.respond(HttpStatusCode.Conflict)
                 return@post
@@ -47,7 +47,7 @@ fun Route.addPassword(
 }
 
 fun Route.getPasswords(
-    passwordDataSource: PasswordRepository
+    passwordRepository: PasswordRepository
 ) {
     authenticate {
         get("/user/passwords") {
@@ -55,13 +55,32 @@ fun Route.getPasswords(
             val pageSize = call.parameters[QueryParams.PARAM_PAGE_SIZE]?.toIntOrNull()
                 ?: Constants.DEFAULT_PAGE_SIZE
 
-            val passwords = passwordDataSource.getPasswords(
+            val passwords = passwordRepository.getPasswords(
                 userId = call.userId,
                 page = page,
                 pageSize = pageSize
             )
 
             call.respond(HttpStatusCode.OK, passwords)
+        }
+    }
+}
+
+fun Route.getPostDetails(passwordRepository: PasswordRepository) {
+    authenticate {
+        get("/password/details") {
+            val passwordId = call.parameters["passwordId"] ?: kotlin.run {
+                call.respond(HttpStatusCode.BadRequest)
+                return@get
+            }
+            val password = passwordRepository.getPasswordDetails(passwordId) ?: kotlin.run {
+                call.respond(HttpStatusCode.NotFound)
+                return@get
+            }
+            call.respond(
+                HttpStatusCode.OK,
+                BasicApiResponse(successful = true, data = password)
+            )
         }
     }
 }
