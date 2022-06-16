@@ -4,6 +4,8 @@ import dev.amal.data.models.PasswordItem
 import dev.amal.data.responses.PasswordItemResponse
 import org.litote.kmongo.coroutine.CoroutineDatabase
 import org.litote.kmongo.eq
+import org.litote.kmongo.or
+import org.litote.kmongo.regex
 
 class PasswordRepositoryImpl(
     db: CoroutineDatabase
@@ -43,4 +45,14 @@ class PasswordRepositoryImpl(
             website = password.website
         )
     }
+
+    override suspend fun searchForPasswords(
+        query: String
+    ): List<PasswordItem> = passwords.find(
+        or(
+            PasswordItem::title regex Regex("(?i).*$query.*"),
+            PasswordItem::email eq query,
+            PasswordItem::website eq query
+        )
+    ).toList()
 }

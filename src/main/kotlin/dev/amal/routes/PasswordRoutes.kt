@@ -4,6 +4,7 @@ import dev.amal.data.add_password.PasswordRepository
 import dev.amal.data.models.PasswordItem
 import dev.amal.data.requests.AddPasswordRequest
 import dev.amal.data.responses.BasicApiResponse
+import dev.amal.data.responses.PasswordItemResponse
 import dev.amal.utils.Constants
 import dev.amal.utils.QueryParams
 import dev.amal.utils.userId
@@ -81,6 +82,28 @@ fun Route.getPostDetails(passwordRepository: PasswordRepository) {
                 HttpStatusCode.OK,
                 BasicApiResponse(successful = true, data = password)
             )
+        }
+    }
+}
+
+fun Route.searchPassword(passwordRepository: PasswordRepository) {
+    authenticate {
+        get("/password/search") {
+            val query = call.parameters[QueryParams.PARAM_QUERY]
+            if (query == null || query.isBlank()) {
+                call.respond(HttpStatusCode.OK, listOf<PasswordItemResponse>())
+                return@get
+            }
+            val searchResults = passwordRepository.searchForPasswords(query).map { password ->
+                PasswordItemResponse(
+                    id = call.userId,
+                    title = password.title,
+                    email = password.email,
+                    password = password.password,
+                    website = password.website
+                )
+            }.filter { it.id != call.userId }
+            call.respond(HttpStatusCode.OK, searchResults)
         }
     }
 }

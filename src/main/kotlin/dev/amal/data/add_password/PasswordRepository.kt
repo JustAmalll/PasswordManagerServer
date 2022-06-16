@@ -13,4 +13,6 @@ interface PasswordRepository {
     ): List<PasswordItemResponse>
 
     suspend fun getPasswordDetails(passwordId: String): PasswordItemResponse?
+
+    suspend fun searchForPasswords(query: String): List<PasswordItem>
 }
