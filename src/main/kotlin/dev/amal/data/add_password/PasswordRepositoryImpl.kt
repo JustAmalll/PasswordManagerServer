@@ -26,6 +26,7 @@ class PasswordRepositoryImpl(
             .map { passwordItem ->
                 PasswordItemResponse(
                     id = passwordItem.id,
+                    userId = userId,
                     title = passwordItem.title,
                     email = passwordItem.email,
                     password = passwordItem.password,
@@ -34,11 +35,12 @@ class PasswordRepositoryImpl(
             }
 
     override suspend fun getPasswordDetails(
-        passwordId: String
+        passwordId: String, userId: String,
     ): PasswordItemResponse? {
         val password = passwords.findOneById(passwordId) ?: return null
         return PasswordItemResponse(
             id = password.id,
+            userId = userId,
             title = password.title,
             email = password.email,
             password = password.password,

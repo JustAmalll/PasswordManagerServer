@@ -12,7 +12,7 @@ interface PasswordRepository {
         pageSize: Int = Constants.DEFAULT_PAGE_SIZE
     ): List<PasswordItemResponse>
 
-    suspend fun getPasswordDetails(passwordId: String): PasswordItemResponse?
+    suspend fun getPasswordDetails(passwordId: String, userId: String,): PasswordItemResponse?
 
     suspend fun searchForPasswords(query: String): List<PasswordItem>
 }

@@ -26,5 +26,6 @@ fun Application.configureRouting(
         getPasswords(passwordRepository)
         getPostDetails(passwordRepository)
         searchPassword(passwordRepository)
+        root()
     }
 }

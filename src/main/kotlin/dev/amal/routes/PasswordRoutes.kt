@@ -61,7 +61,6 @@ fun Route.getPasswords(
                 page = page,
                 pageSize = pageSize
             )
-
             call.respond(HttpStatusCode.OK, passwords)
         }
     }
@@ -74,7 +73,9 @@ fun Route.getPostDetails(passwordRepository: PasswordRepository) {
                 call.respond(HttpStatusCode.BadRequest)
                 return@get
             }
-            val password = passwordRepository.getPasswordDetails(passwordId) ?: kotlin.run {
+            val password = passwordRepository.getPasswordDetails(
+                passwordId, call.userId
+            ) ?: kotlin.run {
                 call.respond(HttpStatusCode.NotFound)
                 return@get
             }
@@ -94,15 +95,17 @@ fun Route.searchPassword(passwordRepository: PasswordRepository) {
                 call.respond(HttpStatusCode.OK, listOf<PasswordItemResponse>())
                 return@get
             }
-            val searchResults = passwordRepository.searchForPasswords(query).map { password ->
-                PasswordItemResponse(
-                    id = call.userId,
-                    title = password.title,
-                    email = password.email,
-                    password = password.password,
-                    website = password.website
-                )
-            }.filter { it.id != call.userId }
+            val searchResults = passwordRepository.searchForPasswords(query)
+                .map { password ->
+                    PasswordItemResponse(
+                        id = password.id,
+                        userId = password.userId,
+                        title = password.title,
+                        email = password.email,
+                        password = password.password,
+                        website = password.website
+                    )
+                }.filter { it.userId == call.userId }
             call.respond(HttpStatusCode.OK, searchResults)
         }
     }
