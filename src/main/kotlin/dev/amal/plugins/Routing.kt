@@ -1,5 +1,6 @@
 package dev.amal.plugins
 
+import dev.amal.data.add_card.CardRepository
 import dev.amal.data.add_password.PasswordRepository
 import dev.amal.data.user.UserDataSource
 import dev.amal.routes.*
@@ -14,7 +15,8 @@ fun Application.configureRouting(
     hashingService: HashingService,
     tokenService: TokenService,
     tokenConfig: TokenConfig,
-    passwordRepository: PasswordRepository
+    passwordRepository: PasswordRepository,
+    cardRepository: CardRepository
 ) {
     routing {
         signIn(userDataSource, hashingService, tokenService, tokenConfig)
@@ -27,5 +29,7 @@ fun Application.configureRouting(
         getPostDetails(passwordRepository)
         searchPassword(passwordRepository)
         root()
+
+        addCard(cardRepository)
     }
 }

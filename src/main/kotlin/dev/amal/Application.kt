@@ -1,5 +1,6 @@
 package dev.amal
 
+import dev.amal.data.add_card.CardRepositoryImpl
 import dev.amal.data.add_password.PasswordRepositoryImpl
 import dev.amal.data.user.MongoUserDataSource
 import dev.amal.plugins.configureMonitoring
@@ -35,8 +36,16 @@ fun Application.module() {
     val hashingService = SHA256HashingService()
 
     val passwordRepository = PasswordRepositoryImpl(db)
+    val cardRepository = CardRepositoryImpl(db)
 
-    configureRouting(userDataSource, hashingService, tokenService, tokenConfig, passwordRepository)
+    configureRouting(
+        userDataSource,
+        hashingService,
+        tokenService,
+        tokenConfig,
+        passwordRepository,
+        cardRepository
+    )
     configureSerialization()
     configureMonitoring()
     configureSecurity(tokenConfig)
