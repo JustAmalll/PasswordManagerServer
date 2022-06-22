@@ -1,12 +1,11 @@
 package dev.amal.routes
 
 import dev.amal.data.add_card.CardRepository
-import dev.amal.data.add_password.PasswordRepository
 import dev.amal.data.models.CardItem
-import dev.amal.data.models.PasswordItem
-import dev.amal.data.requests.AddPasswordRequest
 import dev.amal.data.requests.CardRequest
 import dev.amal.data.responses.BasicApiResponse
+import dev.amal.utils.Constants
+import dev.amal.utils.QueryParams
 import dev.amal.utils.userId
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -25,17 +24,18 @@ fun Route.addCard(
                 return@post
             }
 
-            val passwordItem = CardItem(
+            val cardItem = CardItem(
+                userId = call.userId,
                 title = request.title,
                 cardHolderName = request.cardHolderName,
                 cardNumber = request.cardNumber,
                 expirationDate = request.expirationDate,
-                CVV = request.CVV,
+                cvv = request.cvv,
                 cardPin = request.cardPin,
-                ZIP = request.ZIP
+                zip = request.zip
             )
 
-            val wasAcknowledged = cardRepository.addCard(passwordItem)
+            val wasAcknowledged = cardRepository.addCard(cardItem)
             if (!wasAcknowledged) {
                 call.respond(HttpStatusCode.Conflict)
                 return@post
@@ -44,6 +44,47 @@ fun Route.addCard(
             call.respond(
                 status = HttpStatusCode.OK,
                 message = BasicApiResponse<Unit>(successful = true)
+            )
+        }
+    }
+}
+
+fun Route.getCards(
+    cardRepository: CardRepository
+) {
+    authenticate {
+        get("/user/cards") {
+            val page = call.parameters[QueryParams.PARAM_PAGE]?.toIntOrNull() ?: 0
+            val pageSize = call.parameters[QueryParams.PARAM_PAGE_SIZE]?.toIntOrNull()
+                ?: Constants.DEFAULT_PAGE_SIZE
+
+            val cards = cardRepository.getCards(
+                userId = call.userId,
+                page = page,
+                pageSize = pageSize
+            )
+            call.respond(HttpStatusCode.OK, cards)
+            println(cards)
+        }
+    }
+}
+
+fun Route.getCardDetails(cardRepository: CardRepository) {
+    authenticate {
+        get("/card/details") {
+            val passwordId = call.parameters["cardId"] ?: kotlin.run {
+                call.respond(HttpStatusCode.BadRequest)
+                return@get
+            }
+            val password = cardRepository.getCardDetails(
+                passwordId, call.userId
+            ) ?: kotlin.run {
+                call.respond(HttpStatusCode.NotFound)
+                return@get
+            }
+            call.respond(
+                HttpStatusCode.OK,
+                BasicApiResponse(successful = true, data = password)
             )
         }
     }

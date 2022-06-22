@@ -5,11 +5,12 @@ import org.bson.types.ObjectId
 
 data class CardItem(
     @BsonId val id: String = ObjectId().toString(),
+    val userId: String,
     val title: String,
     val cardHolderName: String,
     val cardNumber: String,
     val expirationDate: String,
-    val CVV: String,
+    val cvv: String,
     val cardPin: String,
-    val ZIP: String
+    val zip: String
 )

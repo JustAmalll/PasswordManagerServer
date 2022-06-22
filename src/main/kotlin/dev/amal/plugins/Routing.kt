@@ -26,10 +26,12 @@ fun Application.configureRouting(
 
         addPassword(passwordRepository)
         getPasswords(passwordRepository)
-        getPostDetails(passwordRepository)
+        getPasswordDetails(passwordRepository)
         searchPassword(passwordRepository)
         root()
 
         addCard(cardRepository)
+        getCards(cardRepository)
+        getCardDetails(cardRepository)
     }
 }

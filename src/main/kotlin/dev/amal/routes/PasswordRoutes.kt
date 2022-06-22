@@ -66,7 +66,7 @@ fun Route.getPasswords(
     }
 }
 
-fun Route.getPostDetails(passwordRepository: PasswordRepository) {
+fun Route.getPasswordDetails(passwordRepository: PasswordRepository) {
     authenticate {
         get("/password/details") {
             val passwordId = call.parameters["passwordId"] ?: kotlin.run {
